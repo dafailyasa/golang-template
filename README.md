@@ -25,5 +25,6 @@ All the project is based in interfaces that mean you can implement your own logi
 - GRPC
 - Elasticsearch
 - Swagger API Documentation
+- Kubernetes
 - Many More
 
