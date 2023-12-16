@@ -19,3 +19,9 @@
 
 # Go workspace file
 go.work
+
+# Remove Output of Logs result
+logs
+
+# Igonre config.yaml 
+config/config.yaml

@@ -1,0 +1,3 @@
+APP_NAME: "Golang Template"
+APP_PORT: 9090
+MONGO_URI: 'mongodb://localhost:27017/golang-template'
