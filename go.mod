@@ -3,6 +3,7 @@ module github.com/dafailyasa/golang-template
 go 1.19
 
 require (
+	github.com/confluentinc/confluent-kafka-go/v2 v2.3.0
 	github.com/gofiber/fiber/v2 v2.51.0
 	github.com/spf13/viper v1.18.1
 	github.com/throttled/throttled/v2 v2.12.0
