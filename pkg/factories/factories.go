@@ -6,6 +6,8 @@ import (
 	"time"
 
 	customErr "github.com/dafailyasa/golang-template/pkg/custom-errors"
+	kafkaApp "github.com/dafailyasa/golang-template/pkg/kafka/application"
+	kafkaRepo "github.com/dafailyasa/golang-template/pkg/kafka/infrastructure/repositories"
 	loggerApp "github.com/dafailyasa/golang-template/pkg/logger/application"
 	loggerRepo "github.com/dafailyasa/golang-template/pkg/logger/infrastructure/repositories"
 	"github.com/spf13/viper"
@@ -24,6 +26,7 @@ type Factory struct {
 	viper           *viper.Viper
 	dbClient        *mongo.Client
 	logger          *loggerApp.Logger
+	kafkaProducer   *kafkaApp.KafkaProducer
 	httpRateLimiter throttled.HTTPRateLimiterCtx
 }
 
@@ -61,12 +64,26 @@ func (f *Factory) InitializeZapLogger() *loggerApp.Logger {
 	return logger
 }
 
+func (f *Factory) InitializeKafkaProducer() *kafkaApp.KafkaProducer {
+	repo := kafkaRepo.NewKafkaProducer(f.logger, f.viper)
+	producer := kafkaApp.NewKafkaProducer(repo)
+
+	f.kafkaProducer = producer
+	return producer
+}
+
+// func (f *Factory) InitializeKafkaConsumer() *kafkaApp.KafkaConsumer {
+// 	repo := kafkaRepo.NewKafkaConsumer(f.logger, f.viper)
+// 	repo.
+
+// }
+
 func (f *Factory) InitializeMongoDB() *mongo.Client {
 	if f.dbClient != nil {
 		return f.dbClient
 	}
 
-	uri := f.viper.GetString("MONGO_URI")
+	uri := f.viper.GetString("MONGO.URI")
 	if uri == "" {
 		log.Fatal(customErr.ErrMongoUrlRequired)
 	}
