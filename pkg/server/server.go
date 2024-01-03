@@ -20,11 +20,11 @@ func NewServer(viper *viper.Viper) *Server {
 }
 
 func (s *Server) Run() error {
-	s.viper.SetDefault("APP_NAME", "Golang Template👋")
-	s.viper.SetDefault("APP_PORT", 3030)
+	s.viper.SetDefault("APP.NAME", "Golang Template👋")
+	s.viper.SetDefault("APP.PORT", 3030)
 
-	appName := s.viper.GetString("APP_NAME")
-	appPort := s.viper.GetInt("APP_PORT")
+	appName := s.viper.GetString("APP.NAME")
+	appPort := s.viper.GetInt("APP.PORT")
 
 	app := fiber.New(fiber.Config{
 		AppName:           appName,
