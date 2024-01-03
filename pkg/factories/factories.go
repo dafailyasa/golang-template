@@ -27,6 +27,7 @@ type Factory struct {
 	dbClient        *mongo.Client
 	logger          *loggerApp.Logger
 	kafkaProducer   *kafkaApp.KafkaProducer
+	kafkaConsumer   *kafkaApp.KafkaConsumer
 	httpRateLimiter throttled.HTTPRateLimiterCtx
 }
 
@@ -72,11 +73,13 @@ func (f *Factory) InitializeKafkaProducer() *kafkaApp.KafkaProducer {
 	return producer
 }
 
-// func (f *Factory) InitializeKafkaConsumer() *kafkaApp.KafkaConsumer {
-// 	repo := kafkaRepo.NewKafkaConsumer(f.logger, f.viper)
-// 	repo.
+func (f *Factory) InitializeKafkaConsumer(ctx context.Context) *kafkaApp.KafkaConsumer {
+	repo := kafkaRepo.NewKafkaConsumer(f.logger, f.viper)
+	consumer := kafkaApp.NewKafkaConsumer(repo)
 
-// }
+	f.kafkaConsumer = consumer
+	return consumer
+}
 
 func (f *Factory) InitializeMongoDB() *mongo.Client {
 	if f.dbClient != nil {

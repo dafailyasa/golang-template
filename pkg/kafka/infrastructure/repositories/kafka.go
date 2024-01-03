@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/dafailyasa/golang-template/pkg/kafka/models"
 	"github.com/dafailyasa/golang-template/pkg/kafka/ports"
 	loggerApp "github.com/dafailyasa/golang-template/pkg/logger/application"
 	"github.com/spf13/viper"
@@ -22,7 +23,7 @@ type Kafka struct {
 var _ ports.KafkaRepository = (*Kafka)(nil)
 
 func NewKafkaProducer(logger *loggerApp.Logger, viper *viper.Viper) *Kafka {
-	kafkaCgf := &kafka.ConfigMap{
+	config := &kafka.ConfigMap{
 		"bootstrap.servers": viper.GetString("KAFKA.SERVERS"),
 		"security.protocol": viper.GetString("KAFKA.SECURITY_PROTOCOL"),
 		"sasl.mechanisms":   viper.GetString("KAFKA.SASL_MECHANISMS"),
@@ -31,7 +32,7 @@ func NewKafkaProducer(logger *loggerApp.Logger, viper *viper.Viper) *Kafka {
 		"auto.offset.reset": viper.GetString("KAFKA.AUTO_OFFSET_RESET"),
 	}
 
-	p, err := kafka.NewProducer(kafkaCgf)
+	p, err := kafka.NewProducer(config)
 	if err != nil {
 		logger.Error("Failed to create producer", err)
 	}
@@ -43,16 +44,17 @@ func NewKafkaProducer(logger *loggerApp.Logger, viper *viper.Viper) *Kafka {
 }
 
 func NewKafkaConsumer(logger *loggerApp.Logger, viper *viper.Viper) *Kafka {
-	kafkaCgf := &kafka.ConfigMap{
+	config := &kafka.ConfigMap{
 		"bootstrap.servers": viper.GetString("KAFKA.SERVERS"),
 		"security.protocol": viper.GetString("KAFKA.SECURITY_PROTOCOL"),
 		"sasl.mechanisms":   viper.GetString("KAFKA.SASL_MECHANISMS"),
 		"sasl.username":     viper.GetString("KAFKA.USERNAME"),
+		"group.id":          viper.GetString("KAFKA.GROUP_ID"),
 		"sasl.password":     viper.GetString("KAFKA.PASSWORD"),
 		"auto.offset.reset": viper.GetString("KAFKA.AUTO_OFFSET_RESET"),
 	}
 
-	c, err := kafka.NewConsumer(kafkaCgf)
+	c, err := kafka.NewConsumer(config)
 	if err != nil {
 		logger.Error("Failed to create consumer", err)
 	}
@@ -63,8 +65,8 @@ func NewKafkaConsumer(logger *loggerApp.Logger, viper *viper.Viper) *Kafka {
 	}
 }
 
-func (k *Kafka) Send(topic string, data any) error {
-	val, err := json.Marshal(data)
+func (k *Kafka) Send(payload *models.Producer) error {
+	val, err := json.Marshal(payload.Data)
 	if err != nil {
 		k.Logger.Error("Failed marshal data", err)
 		return err
@@ -72,7 +74,7 @@ func (k *Kafka) Send(topic string, data any) error {
 
 	msg := &kafka.Message{
 		TopicPartition: kafka.TopicPartition{
-			Topic:     &topic,
+			Topic:     &payload.Topic,
 			Partition: kafka.PartitionAny,
 		},
 		Value: val,
@@ -95,18 +97,22 @@ func (k *Kafka) Consume(ctx context.Context, topic string) {
 	}
 
 	run := true
-
 	for run {
 		select {
 		case <-ctx.Done():
 			run = false
 		default:
 			msg, err := k.Consumer.ReadMessage(time.Second)
-			if err == nil {
-				_, err = k.Consumer.CommitMessage(msg)
 
+			if err == nil {
+				fmt.Printf("Message on %s: %s\n", msg.TopicPartition, string(msg.Value))
 				if err != nil {
-					k.Logger.Error("Failed to commit message", err)
+					k.Logger.Error("Failed to process message", err)
+				} else {
+					_, err = k.Consumer.CommitMessage(msg)
+					if err != nil {
+						k.Logger.Error("Failed to commit message", err)
+					}
 				}
 			} else if !err.(kafka.Error).IsTimeout() {
 				k.Logger.Warn("Consumer error", err)
@@ -114,7 +120,8 @@ func (k *Kafka) Consume(ctx context.Context, topic string) {
 		}
 	}
 
-	k.Logger.Info("Closing consumer for topic", topic)
+	msg := fmt.Sprintf("Closing consumer for topic %s", topic)
+	k.Logger.Info(msg, nil)
 
 	err = k.Consumer.Close()
 	if err != nil {

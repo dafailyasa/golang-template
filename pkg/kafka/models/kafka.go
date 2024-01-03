@@ -1,6 +1,6 @@
 package models
 
 type Producer struct {
-	topic string
-	data  any
+	Topic string `json:"topic"`
+	Data  any    `json:"data"`
 }

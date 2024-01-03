@@ -1,26 +1,23 @@
 package application
 
 import (
+	"context"
+
 	"github.com/dafailyasa/golang-template/pkg/kafka/ports"
 )
 
 type KafkaConsumer struct {
-	ProducerRepo ports.KafkaRepository
+	ConsumerRepo ports.KafkaRepository
 }
 
 var _ ports.ProducerApplication = (*KafkaProducer)(nil)
 
-func NewKafkaConsumer(repo ports.KafkaRepository) *KafkaProducer {
-	return &KafkaProducer{
-		ProducerRepo: repo,
+func NewKafkaConsumer(repo ports.KafkaRepository) *KafkaConsumer {
+	return &KafkaConsumer{
+		ConsumerRepo: repo,
 	}
 }
 
-// func (p *KafkaProducer) Consume(topic string) error {
-// 	err := p.ProducerRepo
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	return nil
-// }
+func (c *KafkaConsumer) Consumer(topic string, ctx context.Context) {
+	c.ConsumerRepo.Consume(ctx, topic)
+}
