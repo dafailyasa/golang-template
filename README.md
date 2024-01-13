@@ -24,7 +24,7 @@ All the project is based in interfaces that mean you can implement your own logi
 
 ## Next Feature Soon
 - Kafka
-- GRPC
+- GRPC 
 - Elasticsearch
 - Swagger API Documentation
 - Kubernetes
