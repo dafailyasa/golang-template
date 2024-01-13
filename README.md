@@ -37,10 +37,6 @@ All the project is based in interfaces that mean you can implement your own logi
 | chore | Other changes that don't modify src or test files |
 | revert | Reverts a previous commit |
 
-
-
-
-
 ## Next Feature Soon
 - Kafka
 - GRPC 
