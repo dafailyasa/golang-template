@@ -1,7 +1,13 @@
-APP_NAME: "Golang Template👋"
-APP_PORT: 9090
-MONGO_URI: 'mongodb://localhost:27017/golang-template'
-
-KAFKA_BOOTSTRAP_SERVERS: 'localhost:9092'
-KAFKA_GROUP_ID: 'golang-template'
-KAFKA_AUTO_OFFSET_RESET: 'earliest'
+APP: 
+  NAME: 'golang-template👋'
+  PORT: 9090
+MONGO: 
+  URI: 'mongodb://localhost:27017/golang-template'
+KAFKA: 
+  SERVERS: 'localhost:9092'
+  SECURITY_PROTOCOL: 'SASL_SSL'
+  SASL_MECHANISMS: 'PLAIN'
+  USERNAME: 'username'
+  PASSWORD: 'password'
+  GROUP_ID: 'golang-template'
+  AUTO_OFFSET_RESET: 'earliest'
