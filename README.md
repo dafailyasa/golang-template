@@ -23,7 +23,7 @@ All the project is based in interfaces that mean you can implement your own logi
 
 
 ## Next Feature Soon
-- Implement Kafka as a messages broker
+- Kafka
 - GRPC
 - Elasticsearch
 - Swagger API Documentation
