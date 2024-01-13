@@ -21,6 +21,25 @@ All the project is based in interfaces that mean you can implement your own logi
 - `./scripts/generate-coverage-report.sh` generate test coverage result report
 - `./scripts/run-test.sh` running unit testing
 
+## Commit type
+
+| Type | Description |
+| --- | --- |
+| feat | A new feature |
+| fix | A bug fix |
+| docs | Documentation only changes |
+| style | Changes that do not affect the meaning of the code (white-space, formatting etc) |
+| refactor | A code change that neither fixes a bug nor adds a feature |
+| perf | A code change that improves performance |
+| test | Adding missing tests or correcting existing tests |
+| build | Changes that affect the build system or external dependencies |
+| ci | Changes to our CI configuration files and scripts |
+| chore | Other changes that don't modify src or test files |
+| revert | Reverts a previous commit |
+
+
+
+
 
 ## Next Feature Soon
 - Kafka
