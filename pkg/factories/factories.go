@@ -5,6 +5,7 @@ import (
 	"log"
 	"time"
 
+	"github.com/dafailyasa/golang-template/pkg/constants"
 	customErr "github.com/dafailyasa/golang-template/pkg/custom-errors"
 	kafkaApp "github.com/dafailyasa/golang-template/pkg/kafka/application"
 	kafkaRepo "github.com/dafailyasa/golang-template/pkg/kafka/infrastructure/repositories"
@@ -66,7 +67,7 @@ func (f *Factory) InitializeZapLogger() *loggerApp.Logger {
 }
 
 func (f *Factory) InitializeKafkaProducer() *kafkaApp.KafkaProducer {
-	repo := kafkaRepo.NewKafkaProducer(f.logger, f.viper)
+	repo, _ := kafkaRepo.NewKafkaClient(f.logger, f.viper, constants.ProducerAction)
 	producer := kafkaApp.NewKafkaProducer(repo)
 
 	f.kafkaProducer = producer
@@ -74,7 +75,7 @@ func (f *Factory) InitializeKafkaProducer() *kafkaApp.KafkaProducer {
 }
 
 func (f *Factory) InitializeKafkaConsumer(ctx context.Context) *kafkaApp.KafkaConsumer {
-	repo := kafkaRepo.NewKafkaConsumer(f.logger, f.viper)
+	repo, _ := kafkaRepo.NewKafkaClient(f.logger, f.viper, constants.ConsumerAction)
 	consumer := kafkaApp.NewKafkaConsumer(repo)
 
 	f.kafkaConsumer = consumer

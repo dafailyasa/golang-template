@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/dafailyasa/golang-template/pkg/constants"
 	"github.com/dafailyasa/golang-template/pkg/kafka/models"
 	"github.com/dafailyasa/golang-template/pkg/kafka/ports"
 	loggerApp "github.com/dafailyasa/golang-template/pkg/logger/application"
@@ -22,8 +23,11 @@ type Kafka struct {
 
 var _ ports.KafkaRepository = (*Kafka)(nil)
 
-func NewKafkaProducer(logger *loggerApp.Logger, viper *viper.Viper) *Kafka {
-	config := &kafka.ConfigMap{
+func NewKafkaClient(logger *loggerApp.Logger, viper *viper.Viper, action string) (*Kafka, error) {
+	var c *kafka.Consumer
+	var p *kafka.Producer
+
+	config := kafka.ConfigMap{
 		"bootstrap.servers": viper.GetString("KAFKA.SERVERS"),
 		"security.protocol": viper.GetString("KAFKA.SECURITY_PROTOCOL"),
 		"sasl.mechanisms":   viper.GetString("KAFKA.SASL_MECHANISMS"),
@@ -32,37 +36,31 @@ func NewKafkaProducer(logger *loggerApp.Logger, viper *viper.Viper) *Kafka {
 		"auto.offset.reset": viper.GetString("KAFKA.AUTO_OFFSET_RESET"),
 	}
 
-	p, err := kafka.NewProducer(config)
-	if err != nil {
-		logger.Error("Failed to create producer", err)
+	if action == constants.ConsumerAction {
+		var err error
+		c, err = kafka.NewConsumer(&config)
+		if err != nil {
+			logger.Error("Failed to create consumer", err)
+			return nil, err
+		}
+	}
+
+	if action == constants.ProducerAction {
+		config["group.id"] = viper.GetString("KAFKA.GROUP_ID")
+		var err error
+
+		p, err = kafka.NewProducer(&config)
+		if err != nil {
+			logger.Error("Failed to create consumer", err)
+			return nil, err
+		}
 	}
 
 	return &Kafka{
 		Producer: p,
-		Logger:   logger,
-	}
-}
-
-func NewKafkaConsumer(logger *loggerApp.Logger, viper *viper.Viper) *Kafka {
-	config := &kafka.ConfigMap{
-		"bootstrap.servers": viper.GetString("KAFKA.SERVERS"),
-		"security.protocol": viper.GetString("KAFKA.SECURITY_PROTOCOL"),
-		"sasl.mechanisms":   viper.GetString("KAFKA.SASL_MECHANISMS"),
-		"sasl.username":     viper.GetString("KAFKA.USERNAME"),
-		"group.id":          viper.GetString("KAFKA.GROUP_ID"),
-		"sasl.password":     viper.GetString("KAFKA.PASSWORD"),
-		"auto.offset.reset": viper.GetString("KAFKA.AUTO_OFFSET_RESET"),
-	}
-
-	c, err := kafka.NewConsumer(config)
-	if err != nil {
-		logger.Error("Failed to create consumer", err)
-	}
-
-	return &Kafka{
 		Consumer: c,
 		Logger:   logger,
-	}
+	}, nil
 }
 
 func (k *Kafka) Send(payload *models.Producer) error {
