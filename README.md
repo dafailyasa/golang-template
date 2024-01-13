@@ -15,10 +15,12 @@ All the project is based in interfaces that mean you can implement your own logi
 
 ## Command Runner
 - `./scripts/run.sh` for running app 
+- `./scripts/run-worker.sh` running worker producer with kafka
 - `./scripts/run-lint.sh` linters runner 
 - `./scripts/run-container.sh` run with docker
 - `./scripts/generate-coverage-report.sh` generate test coverage result report
 - `./scripts/run-test.sh` running unit testing
+
 
 ## Next Feature Soon
 - Implement Kafka as a messages broker
