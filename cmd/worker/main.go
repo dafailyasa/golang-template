@@ -8,13 +8,14 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/dafailyasa/golang-template/pkg/constants"
 	"github.com/dafailyasa/golang-template/pkg/factories"
 )
 
 func main() {
 	factories := factories.NewFactory(
-		"./config/config.yaml",
-		"logs/log.csv",
+		constants.ConfigPath,
+		constants.LogPath,
 	)
 
 	_ = factories.InitializeViper()
