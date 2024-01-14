@@ -11,7 +11,7 @@ All the project is based in interfaces that mean you can implement your own logi
 - CI: [Github Actions 🐙](https://docs.github.com/en/actions)
 
 ## Before The Execution
-- Copy & modify the file `./config/config.yaml` with your own parameters config
+- Copy & modify the file `./config/config.example.yaml` with your own parameters config
 
 ## Command Runner
 - `./scripts/run.sh` for running app 
