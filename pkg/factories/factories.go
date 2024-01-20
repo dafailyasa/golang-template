@@ -67,17 +67,23 @@ func (f *Factory) InitializeZapLogger() *loggerApp.Logger {
 }
 
 func (f *Factory) InitializeKafkaProducer() *kafkaApp.KafkaProducer {
+	if f.kafkaProducer != nil {
+		return f.kafkaProducer
+	}
+
 	repo, _ := kafkaRepo.NewKafkaClient(f.logger, f.viper, constants.ProducerAction)
 	producer := kafkaApp.NewKafkaProducer(repo)
-
 	f.kafkaProducer = producer
 	return producer
 }
 
 func (f *Factory) InitializeKafkaConsumer(ctx context.Context) *kafkaApp.KafkaConsumer {
+	if f.kafkaConsumer != nil {
+		return f.kafkaConsumer
+	}
+
 	repo, _ := kafkaRepo.NewKafkaClient(f.logger, f.viper, constants.ConsumerAction)
 	consumer := kafkaApp.NewKafkaConsumer(repo)
-
 	f.kafkaConsumer = consumer
 	return consumer
 }
