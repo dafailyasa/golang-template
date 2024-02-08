@@ -20,7 +20,7 @@ func main() {
 
 	_ = factories.InitializeViper()
 	logger := factories.InitializeZapLogger()
-	//factories.InitializeMongoDB()
+	factories.InitializeMongoDB()
 
 	logger.Info("Starting Initialize kafka consumer", nil)
 
