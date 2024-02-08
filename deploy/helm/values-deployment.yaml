@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: golang-template
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: golang-template
+  template:
+    metadata:
+      labels:
+        app: golang-template
+    spec:
+      containers:
+        - name: golang-template
+          image: GOLANG_TEMPLATE_IMAGE
+          ports:
+            - containerPort: 80
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 40
+            periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 40
+            periodSeconds: 20
+          resources:
+            limits:
+              memory: 2048Mi
+              cpu: 500m
+            requests:
+              memory: 1024Mi
+              cpu: 300m

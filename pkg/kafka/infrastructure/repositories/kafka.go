@@ -26,6 +26,7 @@ var _ ports.KafkaRepository = (*Kafka)(nil)
 func NewKafkaClient(logger *loggerApp.Logger, viper *viper.Viper, action string) (*Kafka, error) {
 	var c *kafka.Consumer
 	var p *kafka.Producer
+	var err error
 
 	config := kafka.ConfigMap{
 		"bootstrap.servers": viper.GetString("KAFKA.SERVERS"),
@@ -37,17 +38,13 @@ func NewKafkaClient(logger *loggerApp.Logger, viper *viper.Viper, action string)
 	}
 
 	if action == constants.ConsumerAction {
-		var err error
 		c, err = kafka.NewConsumer(&config)
 		if err != nil {
 			logger.Error("Failed to create consumer", err)
 			return nil, err
 		}
-	}
-
-	if action == constants.ProducerAction {
+	} else {
 		config["group.id"] = viper.GetString("KAFKA.GROUP_ID")
-		var err error
 
 		p, err = kafka.NewProducer(&config)
 		if err != nil {
