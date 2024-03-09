@@ -4,9 +4,9 @@ import (
 	"fmt"
 
 	user "github.com/dafailyasa/golang-template/internal/user/domain/ports"
+	"github.com/dafailyasa/golang-template/pkg/server/route"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
-	"github.com/gofiber/fiber/v2/middleware/monitor"
 	"github.com/spf13/viper"
 )
 
@@ -37,11 +37,13 @@ func (s *Server) Run() error {
 	// middlewares
 	app.Use(cors.New())
 
-	app.Get("/metrics", monitor.New(monitor.Config{Title: appName + " Metrics"}))
+	routeConfig := route.RouteConfig{
+		App:     app,
+		UserHdl: s.userHdl,
+		Viper:   s.viper,
+	}
 
-	v1Api := app.Group("/api/v1")
-
-	v1Api.Post("/register", s.userHdl.Register)
+	routeConfig.InitRoute()
 
 	err := app.Listen(fmt.Sprintf(":%d", appPort))
 	if err != nil {
