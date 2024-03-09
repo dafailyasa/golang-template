@@ -19,7 +19,9 @@ func main() {
 	factories.InitializeZapLogger()
 	factories.InitializeMongoDB()
 
-	server := server.NewServer(viper)
+	userHdl := factories.BuildUserHandler()
+
+	server := server.NewServer(viper, userHdl)
 
 	err := server.Run()
 	if err != nil {

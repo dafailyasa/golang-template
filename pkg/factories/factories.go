@@ -5,6 +5,9 @@ import (
 	"log"
 	"time"
 
+	userApp "github.com/dafailyasa/golang-template/internal/user/application"
+	userHdl "github.com/dafailyasa/golang-template/internal/user/infrastructure/handlers"
+	userRepo "github.com/dafailyasa/golang-template/internal/user/infrastructure/repositories"
 	"github.com/dafailyasa/golang-template/pkg/constants"
 	customErr "github.com/dafailyasa/golang-template/pkg/custom-errors"
 	kafkaApp "github.com/dafailyasa/golang-template/pkg/kafka/application"
@@ -139,4 +142,16 @@ func (f *Factory) InitializeThrottled() throttled.HTTPRateLimiterCtx {
 	f.httpRateLimiter = httpRateLimiter
 
 	return httpRateLimiter
+}
+
+func (f *Factory) BuildUserHandler() *userHdl.UserHdl {
+	logger := f.InitializeZapLogger()
+	dbClient := f.InitializeMongoDB()
+	viper := f.InitializeViper()
+
+	repo := userRepo.NewUserMongoDB(logger, dbClient, viper)
+	app := userApp.NewUserApp(repo, logger, *viper)
+	userHdl := userHdl.NewUserHandler(app, logger)
+
+	return userHdl
 }

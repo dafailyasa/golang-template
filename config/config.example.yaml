@@ -3,6 +3,7 @@ APP:
   PORT: 9090
 MONGO: 
   URI: 'mongodb://localhost:27017/golang-template'
+  NAME: 'golang-template'
 KAFKA: 
   SERVERS: 'localhost:9092'
   SECURITY_PROTOCOL: 'SASL_SSL'

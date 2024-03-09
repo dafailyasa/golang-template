@@ -3,6 +3,7 @@ package server
 import (
 	"fmt"
 
+	user "github.com/dafailyasa/golang-template/internal/user/domain/ports"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/monitor"
@@ -10,12 +11,14 @@ import (
 )
 
 type Server struct {
-	viper *viper.Viper
+	viper   *viper.Viper
+	userHdl user.UserHandlers
 }
 
-func NewServer(viper *viper.Viper) *Server {
+func NewServer(viper *viper.Viper, user user.UserHandlers) *Server {
 	return &Server{
-		viper: viper,
+		viper:   viper,
+		userHdl: user,
 	}
 }
 
@@ -35,6 +38,10 @@ func (s *Server) Run() error {
 	app.Use(cors.New())
 
 	app.Get("/metrics", monitor.New(monitor.Config{Title: appName + " Metrics"}))
+
+	v1Api := app.Group("/api/v1")
+
+	v1Api.Post("/register", s.userHdl.Register)
 
 	err := app.Listen(fmt.Sprintf(":%d", appPort))
 	if err != nil {
