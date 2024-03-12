@@ -15,11 +15,16 @@ func main() {
 		constants.LogPath,
 	)
 
+	// dependency
 	viper := factories.InitializeViper()
 	factories.InitializeZapLogger()
 	factories.InitializeMongoDB()
 
-	server := server.NewServer(viper)
+	// handlers
+	userHdl := factories.BuildUserHandler()
+
+	// server
+	server := server.NewServer(viper, userHdl)
 
 	err := server.Run()
 	if err != nil {
